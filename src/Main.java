@@ -1,54 +1,49 @@
-import utils.DataInput;
+import java.util.Scanner;
 
-import java.util.ArrayList;
-
-public class Main {
+public class Task2 {
     public static void main(String[] args) {
-        ArrayList<Integer> occurrences = new ArrayList<>();
-        String substring = DataInput.getString("Введіть шукану підстрічку: ").toLowerCase();
-        String[] strings = DataInput.getString("Введіть стрічки, розділені пробілами: ").toLowerCase().split("\\s+");
+        while (true) {
+            Scanner scanner = new Scanner(System.in);
+            System.out.print("Введіть систему числення: ");
+            int base = scanner.nextInt();
 
-        for (String inputString : strings) {
-            int count = countSubstringOccurrences(substring, inputString);
-            System.out.println("Кількість входжень підстрічки в стрічці " + inputString +": " + count);
-            occurrences.add(count);
-        }
-        sortOccurrences(occurrences);
-        System.out.println("Відсортовані кількості входжень:");
-        for (Integer occurrence : occurrences) {
-            System.out.println(occurrence);
+            System.out.print("Введіть число: ");
+            String number = scanner.next();
+
+
+            try {
+                int decimalNumber = convertToDecimal(number, base);
+                System.out.println("Десяткове представлення числа: " + decimalNumber);
+            } catch (NumberFormatException e) {
+                System.out.println("Помилка: неправильний формат числа або системи числення.");
+            }
         }
     }
 
-    public static int countSubstringOccurrences(String substring, String inputString) {
-        int count = 0;
-        for (int i = 0; i < inputString.length(); i++) {
-            if (inputString.charAt(i) == substring.charAt(0) && i + substring.length() <= inputString.length()) {
-                boolean isSubstring = true;
-                for (int j = 0; j < substring.length(); j++) {
-                    if (inputString.charAt(i + j) != substring.charAt(j)) {
-                        isSubstring = false;
-                        break;
-                    }
-                }
-                if (isSubstring) {
-                    count++;
-                    i += substring.length() - 1;
-                }
-            }
+    private static int convertToDecimal(String number, int base) {
+        int result = 0;
+        if (base < 2 || base > 16) {
+            throw new IllegalArgumentException("Непідтримувана система числення. Підтримуються лише системи від 2 до 16.");
         }
-        return count;
-    }
 
-    public static void sortOccurrences(ArrayList<Integer> occurrences) {
-        for (int i = 0; i < occurrences.size() - 1; i++) {
-            for (int j = 0; j < occurrences.size() - i - 1; j++) {
-                if (occurrences.get(j) > occurrences.get(j + 1)) {
-                    int temp = occurrences.get(j);
-                    occurrences.set(j, occurrences.get(j + 1));
-                    occurrences.set(j + 1, temp);
-                }
+        int power = 0;
+        for (int i = number.length() - 1; i >= 0; i--) {
+            int digitValue;
+            if (number.charAt(i) >= 'A' && number.charAt(i) <= 'F') {
+                digitValue = number.charAt(i) - 'A' + 10;
+            } else {
+                digitValue = Character.getNumericValue(number.charAt(i));
             }
+            if (digitValue >= base) {
+                throw new NumberFormatException("Неправильний формат числа або системи числення.");
+            }
+
+            result += digitValue * Math.pow(base, power);
+            power++;
         }
+if(number.charAt(0) == '-'){
+            result = -result;
+}
+        return result;
     }
 }
